@@ -1,0 +1,34 @@
+box: 
+  id: geshan/laravel-alpine
+  cmd: /bin/sh
+
+build:
+  steps:
+    - script:
+        name: cache composer dependencies
+        code: export COMPOSER_CACHE_DIR="$WERCKER_CACHE_DIR/composer" && mkdir -p $COMPOSER_CACHE_DIR
+    - script:
+        name: copy vendor from cache
+        code: |
+              [ -d $COMPOSER_CACHE_DIR/vendor ] && cp -Rf $COMPOSER_CACHE_DIR/vendor vendor || echo 'Cached vendor not found'
+    - script:
+        name: install dependencies
+        code: composer install --no-interaction --prefer-dist
+    - script:
+        name: copy vendor to cache
+        code: cp -Rf vendor $COMPOSER_CACHE_DIR
+    - script:
+        name: fix sym links
+        code: ln -sf ../phpunit/phpunit/phpunit vendor/bin/phpunit && ln -sf ../brianium/paratest/bin/paratest vendor/bin/paratest
+    - script:
+        name: PHPUnit Unit tests
+        code: ./vendor/bin/phpunit tests/app
+#    - script:
+#        name: PHPUnit Hookah tests
+#        code: ./vendor/bin/paratest --colors -m 2 -p 4 --stop-on-failure --path= tests/Smoke
+  after-steps:
+     - script:
+        name: Notify Hipchat
+        code: |
+            wget https://gist.githubusercontent.com/geshan/129993c475decb2c1f5a/raw/29e2360e83169d0919958ccd568448cdba3d3bfa/hipchat-notifier-wercker.py
+            python hipchat-notifier-wercker.py --project $WERCKER_GIT_REPOSITORY --room 1267700 --token $HIPCHAT_TOKEN

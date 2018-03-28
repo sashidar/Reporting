@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="bootstrap/autoload.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="true"
+         syntaxCheck="false">
+    <testsuites>
+        <testsuite name="Application Test Suite">
+            <directory>./tests</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="LOGIN_USER" value="yipl_admin"/>
+        <env name="LOGIN_PASSWORD" value="admin123"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_DRIVER" value="sync"/>
+        <ini name="memory_limit" value="1024M"/>
+    </php>    
+    <filter>
+	<whitelist processUncoveredFilesFromWhitelist="true">
+	     <directory suffix=".php">./</directory>
+	    <exclude>
+		<directory suffix=".php">./vendor</directory>
+	    </exclude>
+	 </whitelist>
+    </filter>
+</phpunit>
